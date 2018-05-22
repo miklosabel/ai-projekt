@@ -3,6 +3,21 @@ from subprocess import call
 from pathlib2 import Path
 
 import time
+import os
+
+home = os.path.expanduser("~")
+
+#csinaljunk mindent a home konyvtarban
+os.chdir(home)
+
+#keszitsunk egy konyvtarat
+workdir = Path("ujqhz1_ai_projekt")
+if not workdir.exists():
+    call(["mkdir", "ujqhz1_ai_projekt"])
+else:
+    print("Work directory exists, no need to make it again")
+
+os.chdir("ujqhz1_ai_projekt")
 
 #a kepek leszedese
 # a userses oldalamra feltettem az internetrol letoltott es atdolgozott
@@ -28,34 +43,12 @@ if not extracted.exists():
 else:
     print("No need to extract training images again\n ")
 
-# tensorflow leszedese
-#az aktualis konyvtarba leszedi a gites tensorflow konyvtarszerkezetet
-tf_dir = Path("tensorflow")
-if not tf_dir.is_dir():
-    print("Downloading tensorflow transfer learning\n")
-    call(["git", "clone", "https://github.com/tensorflow/tensorflow"])
-    print("Tensorflow transfer learning lib is on!\n")
-else:
-    print("No need to download tensorflow transfer learning lib again.\n")
+#Retrain script letoltese
+call(["curl", "-LO", "https://github.com/tensorflow/hub/raw/r0.1/examples/image_retraining/retrain.py" ])
 
-#tensowflow konyvtarba lepes
-# check = call(["pwd"])
-# if tf_dir.exists():
-#         call(["cd", check])
-# else:
-#     print("ERROR: Tensorflow directory doesn't exits!\n")
+#ujratanitas - ez igenybe vesz kb 30 percet
+print("RETRAINING - TAKES APPROXIMATELY 30 MINUTES")
+time.sleep(5) # itt is csak hogy el lehessen ezt olvasni a terminalban
+os.system('python retrain.py --image_dir Images')
 
-#call(["git", "checkout", "{version}"])
-
-# utolso reteg ujratanitasa
-retrain = Path("tensorflow/examples/image_retraining/retrain.py")
-img = Path("../Images")
-print(img)
-
-if retrain.exists():
-    print("Retraining last layer: \n")
-    call("python tensorflow/tensorflow/examples/image_retraining/retrain.py --image_dir ../Images", shell=True)
-    print("Last layer successfully retrained")
-else:
-    print("ERROR: tensorflow/examples/image_retraining/retrain.py not exists!\n")
 
